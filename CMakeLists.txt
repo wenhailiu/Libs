@@ -60,6 +60,8 @@ else()
             -DVTK_USE_GUISUPPORT:BOOL=ON
             -DVTK_USE_QVTK_QTOPENGL:BOOL=ON
             -DVTK_Group_Qt:BOOL=ON 
+            -DBUILD_TESTING:BOOL=OFF
+            -DVTK_DEBUG_LEAKS:BOOL=ON
             -DQt5_DIR=${Qt5_DIR}
             -DModule_vtkVTKm:BOOL=OFF
             -DModule_vtkAcceleratorsVTKm:BOOL=OFF
