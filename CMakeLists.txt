@@ -12,6 +12,7 @@ set(ThirdPartyLibs ${CMAKE_CURRENT_BINARY_DIR}/ThirdPartyLibs)
 set(CMAKE_BUILD_TYPE Release)
 set(Use_System_Qt5 ON)
 set(Use_System_VTK OFF)
+set(Use_System_ITK OFF)
 set(Use_System_OpenIGTLink OFF)
 set(Use_System_OpenCV OFF)
 set(Use_CUDA OFF)
@@ -85,6 +86,14 @@ else()
         CMAKE_ARGS 
             -DCMAKE_INSTALL_PREFIX=${OpenIGTLink_Install}
             -DBUILD_SHARED_LIBS:BOOL=OFF
+            -DBUILD_EXAMPLES:BOOL=OFF
+            -DBUILD_TESTING:BOOL=OFF
+            -DUSE_GTEST:BOOL=OFF
+            -Dgmock_build_tests:BOOL=OFF
+            -Dgtest_build_samples:BOOL=OFF
+            -Dgtest_build_tests:BOOL=OFF
+            -Dgtest_disable_pthreads:BOOL=OFF
+            -Dgtest_force_shared_crt:BOOL=OFF
     )
 endif()
 
@@ -177,5 +186,30 @@ if(Use_System_Qt5)
             #-DCTK_LIB_Visualization/VTK/Widgets:BOOL=ON
             #-DCTK_LIB_Visualization/VTK/Widgets_USE_TRANSFER_FUNCTION_CHARTS:BOOL=ON
             #-DVTK_DIR=${VTK_DIR}
+    )
+endif()
+
+#ITK: 
+if(Use_System_ITK)
+    find_package(ITK REQUIRED)
+    include_directories(${ITK_INCLUDE_DIRS})
+else()
+    set(ITK_Install ${ThirdPartyLibs}/ITKInstall)
+    set(ITK_Repo ${ThirdPartyLibs}/ITK)
+    set(ITK_DIR ${ThirdPartyLibs}/ITKBuild)
+    set(ITK_Prefix ${ThirdPartyLibs}/ITKPrefix)
+    ExternalProject_Add(
+        ITK
+        PREFIX ${ITK_Prefix}
+        SOURCE_DIR ${ITK_Repo}
+        BINARY_DIR ${ITK_DIR}
+        GIT_REPOSITORY https://github.com/InsightSoftwareConsortium/ITK.git
+        GIT_TAG v5.1.1
+        CMAKE_ARGS 
+            -DCMAKE_INSTALL_PREFIX=${ITK_Install}
+            -DITK_WRAP_PYTHON:BOOL=OFF
+            -DITK_WRAP_JAVA:BOOL=OFF
+            -DBUILD_SHARED_LIBS:BOOL=OFF
+            -DBUILD_TESTING:BOOL=OFF
     )
 endif()
