@@ -7,6 +7,7 @@ include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
 #Thirdparties root dir: 
 set(ThirdPartyLibs ${CMAKE_CURRENT_BINARY_DIR}/ThirdPartyLibs)
+set(ThirdPartyBuildRootPath C:/)
 
 #Settings: 
 set(CMAKE_BUILD_TYPE Release)
@@ -44,7 +45,7 @@ if(Use_System_VTK)
 else()
     set(VTK_Install ${ThirdPartyLibs}/VTKInstall)
     set(VTK_Repo ${ThirdPartyLibs}/VTK)
-    set(VTK_DIR ${ThirdPartyLibs}/VTKBuild)
+    set(VTK_DIR ${ThirdPartyBuildRootPath}/VTKBuild)
     set(VTK_Prefix ${ThirdPartyLibs}/VTKPrefix)
     ExternalProject_Add(
         VTK
@@ -65,6 +66,8 @@ else()
             -DQt5_DIR=${Qt5_DIR}
             -DModule_vtkVTKm:BOOL=OFF
             -DModule_vtkAcceleratorsVTKm:BOOL=OFF
+            -DBUILD_TESTING:BOOL=OFF
+            -DBUILD_EXAMPLES:BOOL=OFF
     )
 endif()
 
@@ -75,7 +78,7 @@ if(Use_System_OpenIGTLink)
 else()
     set(OpenIGTLink_Install ${ThirdPartyLibs}/OpenIGTLinkInstall)
     set(OpenIGTLink_Repo ${ThirdPartyLibs}/OpenIGTLink)
-    set(OpenIGTLink_DIR ${ThirdPartyLibs}/OpenIGTLinkBuild)
+    set(OpenIGTLink_DIR ${ThirdPartyBuildRootPath}/OpenIGTLinkBuild)
     set(OpenIGTLink_Prefix ${ThirdPartyLibs}/OpenIGTLinkPrefix)
     ExternalProject_Add(
         OpenIGTLink
@@ -120,7 +123,7 @@ else(Use_System_OpenCV)
     
     set(OpenCV_Install ${ThirdPartyLibs}/OpenCVInstall)
     set(OpenCV_Repo ${ThirdPartyLibs}/OpenCV)
-    set(OpenCV_DIR ${ThirdPartyLibs}/OpenCVBuild)
+    set(OpenCV_DIR ${ThirdPartyBuildRootPath}/OpenCVBuild)
     set(OpenCV_Prefix ${ThirdPartyLibs}/OpenCVPrefix)
     if(Use_CUDA)
         ExternalProject_Add(
@@ -162,7 +165,7 @@ endif(Use_System_OpenCV)
 if(Use_System_Qt5)
     set(CTK_Install ${ThirdPartyLibs}/CTKInstall)
     set(CTK_Repo ${ThirdPartyLibs}/CTK)
-    set(CTK_DIR ${ThirdPartyLibs}/CTKBuild)
+    set(CTK_DIR ${ThirdPartyBuildRootPath}/CTKBuild)
     set(CTK_Prefix ${ThirdPartyLibs}/CTKPrefix)
     ExternalProject_Add(
         CTK
@@ -196,7 +199,7 @@ if(Use_System_ITK)
 else()
     set(ITK_Install ${ThirdPartyLibs}/ITKInstall)
     set(ITK_Repo ${ThirdPartyLibs}/ITK)
-    set(ITK_DIR ${ThirdPartyLibs}/ITKBuild)
+    set(ITK_DIR ${ThirdPartyBuildRootPath}/ITKBuild)
     set(ITK_Prefix ${ThirdPartyLibs}/ITKPrefix)
     ExternalProject_Add(
         ITK
@@ -209,7 +212,11 @@ else()
             -DCMAKE_INSTALL_PREFIX=${ITK_Install}
             -DITK_WRAP_PYTHON:BOOL=OFF
             -DITK_WRAP_JAVA:BOOL=OFF
-            -DBUILD_SHARED_LIBS:BOOL=OFF
+            -DBUILD_SHARED_LIBS:BOOL=ON
             -DBUILD_TESTING:BOOL=OFF
+            -DBUILD_EXAMPLES:BOOL=OFF
+            -DModule_ITKVtkGlue:BOOL=ON
+            -DVTK_DIR=${VTK_DIR}
     )
+    ExternalProject_Add_StepDependencies(ITK build VTK)
 endif()
